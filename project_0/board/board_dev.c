@@ -134,15 +134,15 @@ static void SpiFlash_ExitQspiMode(struct rt_qspi_device *qspi_device)
 
 static int rt_hw_spiflash_init(void)
 {
-/*
-    Don't forget to switch SPIM pins to QSPI0 pins on NuMaker-M467HJ V1.0 board.
-    CS:   R12-Open, R13-Close
-    CLK:  R14-Open, R15-Close
-    MOSI: R16-Open, R17-Close
-    MISO: R18-Open, R19-Close
-    IO2:  R20-Open, R21-Close
-    IO3:  R22-Open, R23-Close
-*/
+    /*
+        Don't forget to switch SPIM pins to QSPI0 pins on NuMaker-M467HJ V1.0 board.
+        CS:   R12-Open, R13-Close
+        CLK:  R14-Open, R15-Close
+        MOSI: R16-Open, R17-Close
+        MISO: R18-Open, R19-Close
+        IO2:  R20-Open, R21-Close
+        IO3:  R22-Open, R23-Close
+    */
     if (nu_qspi_bus_attach_device("qspi0", "qspi01", 4, SpiFlash_EnterQspiMode, SpiFlash_ExitQspiMode) != RT_EOK)
         return -1;
 
@@ -270,7 +270,7 @@ int rt_hw_fsa506_port(void)
     rt_err_t ret = RT_EOK;
 
     /* Open ebi BOARD_USING_FSA506_EBI_PORT */
-    ret = nu_ebi_init(BOARD_USING_FSA506_EBI_PORT, EBI_BUSWIDTH_8BIT, EBI_TIMING_NORMAL, EBI_OPMODE_CACCESS, EBI_CS_ACTIVE_LOW);
+    ret = nu_ebi_init(BOARD_USING_FSA506_EBI_PORT, EBI_BUSWIDTH_16BIT, EBI_TIMING_NORMAL, EBI_OPMODE_CACCESS, EBI_CS_ACTIVE_LOW);
     if (ret != RT_EOK)
         return ret;
 
