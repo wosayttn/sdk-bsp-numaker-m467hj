@@ -19,7 +19,7 @@
 
 #define LV_FONT_MONTSERRAT_12           1
 #define LV_FONT_MONTSERRAT_16           1
-#define LV_USE_PERF_MONITOR             1
+//#define LV_USE_PERF_MONITOR             1
 //#define CONFIG_LV_LOG_LEVEL LV_LOG_LEVEL_TRACE
 
 #define LV_USE_DEMO_RTT_MUSIC         1
