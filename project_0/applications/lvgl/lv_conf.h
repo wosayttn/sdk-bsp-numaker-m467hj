@@ -24,10 +24,10 @@
 
 #define LV_USE_DEMO_RTT_MUSIC         1
 #if LV_USE_DEMO_RTT_MUSIC
-    #define LV_DEMO_RTT_MUSIC_AUTO_PLAY   1
+    //#define LV_DEMO_RTT_MUSIC_AUTO_PLAY   1
 
     #define LV_USE_DEMO_MUSIC             1
-    #define LV_DEMO_MUSIC_AUTO_PLAY       1
+    //#define LV_DEMO_MUSIC_AUTO_PLAY       1
 #endif
 
 /* Please comment LV_USE_DEMO_RTT_MUSIC declaration before un-comment below */
