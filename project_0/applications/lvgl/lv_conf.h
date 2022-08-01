@@ -21,13 +21,15 @@
 #define LV_FONT_MONTSERRAT_16           1
 //#define LV_USE_PERF_MONITOR             1
 //#define CONFIG_LV_LOG_LEVEL LV_LOG_LEVEL_TRACE
+#define LV_COLOR_SCREEN_TRANSP        1
 
 #define LV_USE_DEMO_RTT_MUSIC         1
 #if LV_USE_DEMO_RTT_MUSIC
-    //#define LV_DEMO_RTT_MUSIC_AUTO_PLAY   1
+    #define LV_DEMO_RTT_MUSIC_AUTO_PLAY   1
+    #define LV_DEMO_RTT_MUSIC_AUTO_PLAY_FOREVER	1
 
     #define LV_USE_DEMO_MUSIC             1
-    //#define LV_DEMO_MUSIC_AUTO_PLAY       1
+    #define LV_DEMO_MUSIC_AUTO_PLAY       1
 #endif
 
 /* Please comment LV_USE_DEMO_RTT_MUSIC declaration before un-comment below */
