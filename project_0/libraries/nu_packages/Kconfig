@@ -193,19 +193,15 @@ menu "Nuvoton Packages Config"
             prompt "Select TPC drivers"
             config NU_PKG_USING_TPC_ILI
                 bool "ILI Series TPC"
-                default n
 
             config NU_PKG_USING_TPC_GT911
                 bool "GT911 TPC"
-                default n
 
             config NU_PKG_USING_TPC_FT5446
                 bool "FT5446 TPC"
-                default n
 
             config NU_PKG_USING_TPC_ST1663I
                 bool "ST1663I TPC"
-                default n
 
         endchoice
 

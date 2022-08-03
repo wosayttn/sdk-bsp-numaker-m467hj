@@ -60,7 +60,7 @@ void fsa506_send_pixel_data(rt_uint16_t color)
 void fsa506_send_pixels(rt_uint16_t *pixels, int len)
 {
     int count = len / sizeof(rt_uint16_t);
-    if (count < 512)
+    if (count < 1024)
     {
         // CPU feed
         int i = 0;
