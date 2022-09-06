@@ -138,6 +138,8 @@
 #define RT_AUDIO_REPLAY_MP_BLOCK_SIZE 4096
 #define RT_AUDIO_REPLAY_MP_BLOCK_COUNT 2
 #define RT_AUDIO_RECORD_PIPE_SIZE 2048
+#define RT_USING_SENSOR
+#define RT_USING_SENSOR_CMD
 #define RT_USING_HWCRYPTO
 #define RT_HWCRYPTO_DEFAULT_NAME "hwcryto"
 #define RT_HWCRYPTO_IV_MAX_SIZE 16
@@ -336,9 +338,6 @@
 /* enhanced kernel services */
 
 
-/* POSIX extension functions */
-
-
 /* acceleration: Assembly language or algorithmic acceleration packages */
 
 
@@ -351,6 +350,9 @@
 #define PKG_USING_RAMDISK_LATEST_VERSION
 
 /* peripheral libraries and drivers */
+
+
+/* Kendryte SDK */
 
 
 /* AI packages */
@@ -444,15 +446,18 @@
 #define BOARD_USING_CANFD0
 #define BOARD_USING_EXTERNAL_HYPERRAM
 #define BOARD_USING_HYPERRAM_SIZE 8388608
+#define BOARD_USING_NCT7717U
 #define BOARD_USING_USB_D_H
 #define BOARD_USING_HSUSBH_USBD
 
 /* Board extended module drivers */
 
+#define BOARD_USING_SENSON0_ID 
 
 /* Nuvoton Packages Config */
 
 #define NU_PKG_USING_UTILS
+#define NU_PKG_USING_NCT7717U
 #define NU_PKG_USING_NAU8822
 #define UTEST_CMD_PREFIX "bsp.nuvoton.utest."
 #define BOARD_USE_UTEST

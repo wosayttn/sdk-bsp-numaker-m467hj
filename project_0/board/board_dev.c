@@ -316,3 +316,40 @@ int rt_hw_st1663i_port(void)
 }
 INIT_ENV_EXPORT(rt_hw_st1663i_port);
 #endif /* if defined(BOARD_USING_ST1663I) && defined(NU_PKG_USING_TPC_ST1663I) */
+
+#if defined(BOARD_USING_SENSOR0)
+#include "ccap_sensor.h"
+
+#define SENSOR0_RST_PIN    NU_GET_PININDEX(NU_PG, 11)
+#define SENSOR0_PD_PIN     NU_GET_PININDEX(NU_PD, 12)
+
+ccap_sensor_io sIo_sensor0 =
+{
+    .RstPin          = SENSOR0_RST_PIN,
+    .PwrDwnPin       = SENSOR0_PD_PIN,
+    .I2cName         = "i2c0"
+};
+
+int rt_hw_sensor0_port(void)
+{
+    return  nu_ccap_sensor_create(&sIo_sensor0, (ccap_sensor_id)BOARD_USING_SENSON0_ID);
+}
+INIT_COMPONENT_EXPORT(rt_hw_sensor0_port);
+
+#endif /* BOARD_USING_SENSOR0 */
+
+#if defined(BOARD_USING_NCT7717U)
+
+#include "sensor_nct7717u.h"
+
+int rt_hw_nct7717u_port(void)
+{
+    struct rt_sensor_config cfg;
+
+    cfg.intf.dev_name = "i2c2";
+    cfg.irq_pin.pin = RT_PIN_NONE;
+
+    return rt_hw_nct7717u_init("nct7717u", &cfg);
+}
+INIT_APP_EXPORT(rt_hw_nct7717u_port);
+#endif /* BOARD_USING_NCT7717U */

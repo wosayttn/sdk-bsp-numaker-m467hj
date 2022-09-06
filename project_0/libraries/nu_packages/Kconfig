@@ -23,6 +23,12 @@ menu "Nuvoton Packages Config"
         select RT_USING_SENSOR
         default n
 
+    config NU_PKG_USING_NCT7717U
+        bool "NCT7717U Temperature sensor."
+        select RT_USING_I2C
+        select RT_USING_SENSOR
+        default n
+
     config NU_PKG_USING_NAU88L25
         bool "NAU88L25 Audio Codec."
         select BSP_USING_I2C

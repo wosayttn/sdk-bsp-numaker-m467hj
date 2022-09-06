@@ -375,6 +375,8 @@ void nutool_pincfg_init_i2c0(void)
     SYS->GPH_MFP0 &= ~(SYS_GPH_MFP0_PH3MFP_Msk | SYS_GPH_MFP0_PH2MFP_Msk);
     SYS->GPH_MFP0 |= (SYS_GPH_MFP0_PH3MFP_I2C0_SDA | SYS_GPH_MFP0_PH2MFP_I2C0_SCL);
 
+    GPIO_SetPullCtl(PH, BIT2 | BIT3, GPIO_PUSEL_PULL_UP);
+
     return;
 }
 

@@ -89,6 +89,21 @@ extern "C"
 /* CANFD Rx FIFO 1 extended Mask helper macro - high. */
 #define CANFD_RX_FIFO1_EXT_MASK_HIGH(mask)           ((2UL << 30) | (mask & 0x1FFFFFFF))
 
+/**
+ *    @brief        Get the CAN Communication State Flag
+ *
+ *    @param[in]    canfd    The pointer of the specified CANFD module
+ *
+ *    @retval       0 Synchronizing - node is synchronizing on CANFD communication.
+ *    @retval       1 Idle - node is neither receiver nor transmitter.
+ *    @retval       2 Receiver - node is operating as receiver.
+ *    @retval       3 Transmitter - node is operating as transmitter.
+ *
+ *    @details      This macro gets the CANFD communication state.
+ *    \hideinitializer
+ */
+#define CANFD_GET_COMMUNICATION_STATE(canfd)    (((canfd)->PSR  & CANFD_PSR_ACT_Msk) >> CANFD_PSR_ACT_Pos)
+
 
 /* CAN FD frame data field size. */
 typedef enum
@@ -261,6 +276,15 @@ typedef enum
     eCANFD_RX_DBUF = 2
 } E_CANFD_RX_BUF_TYPE;
 
+/* CAN FD communication state.*/
+typedef enum
+{
+    eCANFD_SYNC         = 0,
+    eCANFD_IDLE         = 1,
+    eCANFD_RECEIVER     = 2,
+    eCANFD_TRANSMITTER  = 3
+} E_CANFD_COMMUNICATION_STATE;
+
 /* CAN FD Message receive Information: via which RX Buffers, etc. */
 typedef struct
 {
@@ -404,9 +428,27 @@ typedef struct
 } CANFD_TX_EVNT_ELEM_T;
 
 
-#define CANFD_TIMEOUT        SystemCoreClock    /* 1 second time-out */
-#define CANFD_TIMEOUT_ERR    (-1L)              /*!< CANFD operation abort due to timeout error \hideinitializer */
-extern int32_t g_CANFD_i32ErrCode;
+#define CANFD_TIMEOUT            SystemCoreClock    /*!< CANFD time-out counter (1 second time-out) */
+#define CANFD_OK                 ( 0L)              /*!< CANFD operation OK */
+#define CANFD_ERR_FAIL           (-1L)              /*!< CANFD operation failed */
+#define CANFD_ERR_TIMEOUT        (-2L)              /*!< CANFD operation abort due to timeout error */
+#define CANFD_READ_REG_TIMEOUT   (48UL)             /*!< CANFD read register time-out count */
+
+__STATIC_INLINE uint32_t CANFD_ReadReg(uint32_t u32RegAddr)
+{
+    uint32_t u32ReadReg;
+    uint32_t u32TimeOutCnt = CANFD_READ_REG_TIMEOUT;
+    u32ReadReg = 0UL;
+    do{
+        u32ReadReg = inpw((uint32_t *)u32RegAddr);
+        if(--u32TimeOutCnt == 0UL)
+        {
+            break;
+        }
+    }while(u32ReadReg == 0UL);
+
+    return u32ReadReg;
+}
 
 void CANFD_Open(CANFD_T *canfd, CANFD_FD_T *psCanfdStr);
 void CANFD_Close(CANFD_T *canfd);
@@ -434,7 +476,7 @@ uint32_t CANFD_IsTxBufTransmitOccur(CANFD_T *canfd, uint32_t u32TxBufIdx);
 uint32_t CANFD_GetTxEvntFifoWaterLvl(CANFD_T *canfd);
 void CANFD_CopyTxEvntFifoToUsrBuf(CANFD_T *canfd, uint32_t u32TxEvntNum, CANFD_TX_EVNT_ELEM_T *psTxEvntElem);
 void CANFD_GetBusErrCount(CANFD_T *canfd, uint8_t *pu8TxErrBuf, uint8_t *pu8RxErrBuf);
-void CANFD_RunToNormal(CANFD_T *canfd, uint8_t u8Enable);
+int32_t CANFD_RunToNormal(CANFD_T *canfd, uint8_t u8Enable);
 void CANFD_GetDefaultConfig(CANFD_FD_T *psConfig, uint8_t u8OpMode);
 void CANFD_ClearStatusFlag(CANFD_T *canfd, uint32_t u32InterruptFlag);
 uint32_t CANFD_GetStatusFlag(CANFD_T *canfd, uint32_t u32IntTypeFlag);

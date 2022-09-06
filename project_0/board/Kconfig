@@ -55,6 +55,13 @@ menu "Hardware Drivers Config"
                 default 8388608
         endif
 
+        config BOARD_USING_NCT7717U
+            bool "Thermal Sensor(over i2c2)"
+            select NU_PKG_USING_NCT7717U
+            select BSP_USING_I2C
+            select BSP_USING_I2C2
+            default y
+
         config BOARD_USING_USB_D_H
             bool "Enable USB Device or Host function"
             help
@@ -187,6 +194,22 @@ menu "Hardware Drivers Config"
         select NU_PKG_USING_TPC
         select NU_PKG_USING_TPC_ST1663I
         default n
+
+    config BOARD_USING_SENSOR0
+        bool "CCAP-SENSOR PORT0(over i2c0/PG11/PD12)"
+        select BSP_USING_I2C
+        select BSP_USING_I2C0
+        select BSP_USING_CCAP
+        select BSP_USING_CCAP0
+        default n
+
+    config BOARD_USING_SENSON0_ID
+        int "Specify Sensor0 ID"
+        default 0  if BOARD_USING_SENSOR0
+        range 0 2
+        help
+            HM1055=0
+            ADV728X=1
 
     endmenu
 

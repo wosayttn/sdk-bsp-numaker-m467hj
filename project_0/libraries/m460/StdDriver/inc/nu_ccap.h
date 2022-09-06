@@ -31,6 +31,7 @@ extern "C"
 /*---------------------------------------------------------------------------------------------------------*/
 #define CCAP_CTL_CCAPEN     (1ul<<CCAP_CTL_CCAPEN_Pos)    /*!< CCAP CTL setting for enabling Camera Capture Interface  \hideinitializer */
 #define CCAP_CTL_PKTEN      (1ul<<CCAP_CTL_PKTEN_Pos)     /*!< CCAP CTL setting for enabling packet output mode  \hideinitializer */
+#define CCAP_CTL_PLNEN      (1ul<<CCAP_CTL_PLNEN_Pos)     /*!< CCAP CTL setting for enabling planar output mode  \hideinitializer */
 #define CCAP_CTL_SHUTTER    (1ul<<CCAP_CTL_SHUTTER_Pos)   /*!< CCAP CTL setting for enabling shutter mode  \hideinitializer */
 #define CCAP_CTL_UPDATE     (1ul<<CCAP_CTL_UPDATE_Pos)    /*!< CCAP CTL setting for enabling update register at new frame  \hideinitializer */
 #define CCAP_CTL_RESET      (1ul<<CCAP_CTL_VPRST_Pos)     /*!< CCAP CTL setting for capture reset  \hideinitializer */
@@ -55,6 +56,9 @@ extern "C"
 #define CCAP_PAR_INDATORD_BGGR   (0x1ul<<CCAP_PAR_INDATORD_Pos)       /*!< CCAP PAR setting for Sensor Input Data Order, 0byte: b[0:4] G[5:8], 1byte G[0:2] R[3:8]  \hideinitializer */
 #define CCAP_PAR_INDATORD_GBRG   (0x2ul<<CCAP_PAR_INDATORD_Pos)       /*!< CCAP PAR setting for Sensor Input Data Order, 0byte: G[0:3] G[4:8], 1byte G[0:4] G[5:8]  \hideinitializer */
 #define CCAP_PAR_INDATORD_GRBG   (0x3ul<<CCAP_PAR_INDATORD_Pos)       /*!< CCAP PAR setting for Sensor Input Data Order, 0byte: G[0:3] G[4:8], 1byte G[0:4] G[5:8]  \hideinitializer */
+
+#define CCAP_PAR_PLNFMT_YUV422 (0x0ul<<CCAP_PAR_PLNFMT_Pos)     /*!< CCAP PAR setting for Image Data YUV422P Format Output to System Memory  \hideinitializer */
+#define CCAP_PAR_PLNFMT_YUV420 (0x1ul<<CCAP_PAR_PLNFMT_Pos)     /*!< CCAP PAR setting for Image Data YUV420P Format Output to System Memory  \hideinitializer */
 
 #define CCAP_PAR_OUTFMT_YUV422 (0x0ul<<CCAP_PAR_OUTFMT_Pos)     /*!< CCAP PAR setting for Image Data YUV422 Format Output to System Memory  \hideinitializer */
 #define CCAP_PAR_OUTFMT_ONLY_Y (0x1ul<<CCAP_PAR_OUTFMT_Pos)     /*!< CCAP PAR setting for Image Data ONLY_Y Format Output to System Memory  \hideinitializer */
@@ -103,7 +107,7 @@ extern int32_t g_CCAP_i32ErrCode;
  * @details   Check Camera Capture Interface module Enable or Disable(stopped)
  *  \hideinitializer
  */
-#define CCAP_IS_STOPPED()  ((CCAP->CTL & CCAP_CTL_CCAPEN_Msk)?0:1)
+#define CCAP_IS_STOPPED(ccap)  ((ccap->CTL & CCAP_CTL_CCAPEN_Msk)?0:1)
 
 /**
  * @brief     Clear CCAP flag
@@ -119,7 +123,7 @@ extern int32_t g_CCAP_i32ErrCode;
  * @details   Clear Camera Capture Interface interrupt flag
  *  \hideinitializer
  */
-#define CCAP_CLR_INT_FLAG(u32IntMask) (CCAP->INT |= (u32IntMask))
+#define CCAP_CLR_INT_FLAG(ccap, u32IntMask) (ccap->INT |= (u32IntMask))
 
 /**
  * @brief     Get CCAP Interrupt status
@@ -131,23 +135,30 @@ extern int32_t g_CCAP_i32ErrCode;
  * @details   Get Camera Capture Interface interrupt status.
  * \hideinitializer
  */
-#define CCAP_GET_INT_STS() (CCAP->INT)
+#define CCAP_GET_INT_STS(ccap) (ccap->INT)
 
 
-void CCAP_Open(uint32_t u32InFormat, uint32_t u32OutFormat);
-void CCAP_SetCroppingWindow(uint32_t u32VStart, uint32_t u32HStart, uint32_t u32Height, uint32_t u32Width);
-void CCAP_SetPacketBuf(uint32_t u32Address);
-void CCAP_Close(void);
-void CCAP_EnableInt(uint32_t u32IntMask);
-void CCAP_DisableInt(uint32_t u32IntMask);
-void CCAP_Start(void);
-void CCAP_Stop(uint32_t u32FrameComplete);
-void CCAP_SetPacketScaling(uint32_t u32VNumerator, uint32_t u32VDenominator, uint32_t u32HNumerator, uint32_t u32HDenominator);
-void CCAP_SetPacketStride(uint32_t u32Stride);
-void CCAP_EnableMono(uint32_t u32Interface);
-void CCAP_DisableMono(void);
-void CCAP_EnableLumaYOne(uint32_t u32th);
-void CCAP_DisableLumaYOne(void);
+void CCAP_Open(CCAP_T *ccap, uint32_t u32InFormat, uint32_t u32OutFormat);
+void CCAP_SetCroppingWindow(CCAP_T *ccap, uint32_t u32VStart, uint32_t u32HStart, uint32_t u32Height, uint32_t u32Width);
+void CCAP_SetPacketBuf(CCAP_T *ccap, uint32_t u32Address);
+void CCAP_Close(CCAP_T *ccap);
+void CCAP_EnableInt(CCAP_T *ccap, uint32_t u32IntMask);
+void CCAP_DisableInt(CCAP_T *ccap, uint32_t u32IntMask);
+void CCAP_Start(CCAP_T *ccap);
+void CCAP_Stop(CCAP_T *ccap, uint32_t u32FrameComplete);
+void CCAP_SetPacketScaling(CCAP_T *ccap, uint32_t u32VNumerator, uint32_t u32VDenominator, uint32_t u32HNumerator, uint32_t u32HDenominator);
+void CCAP_SetPacketStride(CCAP_T *ccap, uint32_t u32Stride);
+void CCAP_EnableMono(CCAP_T *ccap, uint32_t u32Interface);
+void CCAP_DisableMono(CCAP_T *ccap);
+void CCAP_EnableLumaYOne(CCAP_T *ccap, uint32_t u32th);
+void CCAP_DisableLumaYOne(CCAP_T *ccap);
+
+void CCAP_SetPlanarYBuf(CCAP_T *ccap, uint32_t u32Address);
+void CCAP_SetPlanarUBuf(CCAP_T *ccap, uint32_t u32Address);
+void CCAP_SetPlanarVBuf(CCAP_T *ccap, uint32_t u32Address);
+void CCAP_SetPlanarScaling(CCAP_T *ccap, uint32_t u32VNumerator, uint32_t u32VDenominator, uint32_t u32HNumerator, uint32_t u32HDenominator);
+void CCAP_SetPlanarStride(CCAP_T *ccap, uint32_t u32Stride);
+
 
 /*@}*/ /* end of group CCAP_EXPORTED_FUNCTIONS */
 

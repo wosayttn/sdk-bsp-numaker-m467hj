@@ -33,6 +33,7 @@ In addition, there is an attached on-board debugger and programmer “Nu-Link2-M
 | A CAN FD communication port |
 | Debug through SWD interface |
 | A LCD panel EBI interface |
+| A Camera Capture interface |
 
 ### 1.3 On-board devices
 
@@ -42,6 +43,17 @@ In addition, there is an attached on-board debugger and programmer “Nu-Link2-M
 | HyperRAM | 64Mb, W956A8MBYA5I | Supported |
 | Ethernet PHY | RTL8201F | Supported |
 | Audio Codec | NAU88L22 | Supported |
+| Thermal Sensor | NCT7717U | Supported |
+
+### 1.4 Board extended module
+
+| Device | Description | Driver supporting status |
+| -- | -- | -- |
+| LCD Panel | SSD1963(over ebi0) | Supported |
+| LCD Panel | LCD FSA506(over ebi0) | Supported |
+| Touch screen controller | TPC ILI2130(over i2c1) | Supported |
+| Touch screen controller | TPC ST1663I(over i2c1) | Supported |
+| CCAP sensor module(over i2c0/PG11/PD12) | HM1055, ADV7280 | Supported |
 
 ## 2. Supported compiler
 
@@ -88,4 +100,4 @@ You can use Tera Term terminate emulator (or other software) to type commands of
 
   [1]: https://direct.nuvoton.com/en/numaker-m467hj
   [2]: https://www.nuvoton.com/resource-files/en-us--UM_NuMaker-M467HJ_EN_Rev1.00.pdf
-  [3]:
+  [3]: Coming soon

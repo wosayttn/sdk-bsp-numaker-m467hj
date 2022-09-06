@@ -252,7 +252,7 @@ typedef struct
     __IO uint32_t CWSP;                  /*!< [0x0020] Cropping Window Starting Address Register                        */
     __IO uint32_t CWS;                   /*!< [0x0024] Cropping Window Size Register                                    */
     __IO uint32_t PKTSL;                 /*!< [0x0028] Packet Scaling Vertical/Horizontal Factor Register (LSB)         */
-    __IO uint32_t PLNSL;
+    __IO uint32_t PLNSL;                 /*!< [0x002C] Planar Scaling Vertical/Horizontal Factor Register (LSB)         */
     __IO uint32_t FRCTL;                 /*!< [0x0030] Scaling Frame Rate Factor Register                               */
     __IO uint32_t STRIDE;                /*!< [0x0034] Frame Output Pixel Stride Width Register                         */
     __I  uint32_t RESERVE1[1];
@@ -260,10 +260,16 @@ typedef struct
     __IO uint32_t CMPADDR;               /*!< [0x0040] Compare Memory Base Address Register                             */
     __IO uint32_t LUMA_Y1_THD;           /*!< [0x0044] Luminance Y8 to Y1 Threshold Value Register                      */
     __IO uint32_t PKTSM;                 /*!< [0x0048] Packet Scaling Vertical/Horizontal Factor Register (MSB)         */
-    __I  uint32_t RESERVE2[1];
-    __IO uint32_t CURADDRP;              /*!< [0x0050] Current Packet System Memory Address Register                    */
-    __I  uint32_t RESERVE3[3];
+    __IO uint32_t PLNSM;                 /*!< [0x004C] Planar Scaling Vertical/Horizontal Factor Register (MSB)         */
+    __I  uint32_t CURADDRP;              /*!< [0x0050] Current Packet System Memory Address Register                    */
+    __I  uint32_t CURADDRY;              /*!< [0x0054] Current Planar Y System Memory Address Register                    */
+    __I  uint32_t CURADDRU;              /*!< [0x0058] Current Planar U System Memory Address Register                    */
+    __I  uint32_t CURADDRV;              /*!< [0x005C] Current Planar V System Memory Address Register                    */
     __IO uint32_t PKTBA0;                /*!< [0x0060] System Memory Packet Base Address 0 Register                     */
+    __I  uint32_t RESERVE4[7];
+    __IO uint32_t YBA;                   /*!< [0x0080] System Memory Planar Y Base Address Register                     */
+    __IO uint32_t UBA;                   /*!< [0x0084] System Memory Planar U Base Address Register                     */
+    __IO uint32_t VBA;                   /*!< [0x0088] System Memory Planar V Base Address Register                     */
 } CCAP_T;
 
 /**
@@ -273,6 +279,9 @@ typedef struct
 
 #define CCAP_CTL_CCAPEN_Pos               (0)                                               /*!< CCAP_T::CTL: CCAPEN Position               */
 #define CCAP_CTL_CCAPEN_Msk               (0x1ul << CCAP_CTL_CCAPEN_Pos)                    /*!< CCAP_T::CTL: CCAPEN Mask                   */
+
+#define CCAP_CTL_PLNEN_Pos                (5)                                               /*!< CCAP_T::CTL: PLNEN Position                */
+#define CCAP_CTL_PLNEN_Msk                (0x1ul << CCAP_CTL_PLNEN_Pos)                     /*!< CCAP_T::CTL: PLNEN Mask                    */
 
 #define CCAP_CTL_PKTEN_Pos                (6)                                               /*!< CCAP_T::CTL: PKTEN Position                */
 #define CCAP_CTL_PKTEN_Msk                (0x1ul << CCAP_CTL_PKTEN_Pos)                     /*!< CCAP_T::CTL: PKTEN Mask                    */
@@ -306,6 +315,9 @@ typedef struct
 
 #define CCAP_PAR_INDATORD_Pos             (2)                                               /*!< CCAP_T::PAR: INDATORD Position             */
 #define CCAP_PAR_INDATORD_Msk             (0x3ul << CCAP_PAR_INDATORD_Pos)                  /*!< CCAP_T::PAR: INDATORD Mask                 */
+
+#define CCAP_PAR_PLNFMT_Pos               (7)                                               /*!< CCAP_T::PAR: OUTFMT Position               */
+#define CCAP_PAR_PLNFMT_Msk               (0x1ul << CCAP_PAR_OUTFMT_Pos)                    /*!< CCAP_T::PAR: OUTFMT Mask                   */
 
 #define CCAP_PAR_OUTFMT_Pos               (4)                                               /*!< CCAP_T::PAR: OUTFMT Position               */
 #define CCAP_PAR_OUTFMT_Msk               (0x3ul << CCAP_PAR_OUTFMT_Pos)                    /*!< CCAP_T::PAR: OUTFMT Mask                   */
@@ -367,6 +379,18 @@ typedef struct
 #define CCAP_PKTSL_PKTSVNL_Pos            (24)                                              /*!< CCAP_T::PKTSL: PKTSVNL Position            */
 #define CCAP_PKTSL_PKTSVNL_Msk            (0xfful << CCAP_PKTSL_PKTSVNL_Pos)                /*!< CCAP_T::PKTSL: PKTSVNL Mask                */
 
+#define CCAP_PLNSL_PLNSHML_Pos            (0)                                               /*!< CCAP_T::PLNSL: PLNSHML Position            */
+#define CCAP_PLNSL_PLNSHML_Msk            (0xfful << CCAP_PLNSL_PLNSHML_Pos)                /*!< CCAP_T::PLNSL: PLNSHML Mask                */
+
+#define CCAP_PLNSL_PLNSHNL_Pos            (8)                                               /*!< CCAP_T::PLNSL: PLNSHNL Position            */
+#define CCAP_PLNSL_PLNSHNL_Msk            (0xfful << CCAP_PLNSL_PLNSHNL_Pos)                /*!< CCAP_T::PLNSL: PLNSHNL Mask                */
+
+#define CCAP_PLNSL_PLNSVML_Pos            (16)                                              /*!< CCAP_T::PLNSL: PLNSVML Position            */
+#define CCAP_PLNSL_PLNSVML_Msk            (0xfful << CCAP_PLNSL_PLNSVML_Pos)                /*!< CCAP_T::PLNSL: PLNSVML Mask                */
+
+#define CCAP_PLNSL_PLNSVNL_Pos            (24)                                              /*!< CCAP_T::PLNSL: PLNSVNL Position            */
+#define CCAP_PLNSL_PLNSVNL_Msk            (0xfful << CCAP_PLNSL_PLNSVNL_Pos)                /*!< CCAP_T::PLNSL: PLNSVNL Mask                */
+
 #define CCAP_FRCTL_FRM_Pos                (0)                                               /*!< CCAP_T::FRCTL: FRM Position                */
 #define CCAP_FRCTL_FRM_Msk                (0x3ful << CCAP_FRCTL_FRM_Pos)                    /*!< CCAP_T::FRCTL: FRM Mask                    */
 
@@ -375,6 +399,9 @@ typedef struct
 
 #define CCAP_STRIDE_PKTSTRIDE_Pos         (0)                                               /*!< CCAP_T::STRIDE: PKTSTRIDE Position         */
 #define CCAP_STRIDE_PKTSTRIDE_Msk         (0x3ffful << CCAP_STRIDE_PKTSTRIDE_Pos)           /*!< CCAP_T::STRIDE: PKTSTRIDE Mask             */
+
+#define CCAP_STRIDE_PLNSTRIDE_Pos         (16)                                              /*!< CCAP_T::STRIDE: PLNSTRIDE Position         */
+#define CCAP_STRIDE_PLNSTRIDE_Msk         (0x3ffful << CCAP_STRIDE_PLNSTRIDE_Pos)           /*!< CCAP_T::STRIDE: PLNSTRIDE Mask             */
 
 #define CCAP_FIFOTH_PKTFTH_Pos            (24)                                              /*!< CCAP_T::FIFOTH: PKTFTH Position            */
 #define CCAP_FIFOTH_PKTFTH_Msk            (0x1ful << CCAP_FIFOTH_PKTFTH_Pos)                /*!< CCAP_T::FIFOTH: PKTFTH Mask                */
@@ -396,6 +423,18 @@ typedef struct
 
 #define CCAP_PKTSM_PKTSVNH_Pos            (24)                                              /*!< CCAP_T::PKTSM: PKTSVNH Position            */
 #define CCAP_PKTSM_PKTSVNH_Msk            (0xfful << CCAP_PKTSM_PKTSVNH_Pos)                /*!< CCAP_T::PKTSM: PKTSVNH Mask                */
+
+#define CCAP_PLNSM_PLNSHMH_Pos            (0)                                               /*!< CCAP_T::PLNSM: PLNSHMH Position            */
+#define CCAP_PLNSM_PLNSHMH_Msk            (0xfful << CCAP_PLNSM_PLNSHMH_Pos)                /*!< CCAP_T::PLNSM: PLNSHMH Mask                */
+
+#define CCAP_PLNSM_PLNSHNH_Pos            (8)                                               /*!< CCAP_T::PLNSM: PLNSHNH Position            */
+#define CCAP_PLNSM_PLNSHNH_Msk            (0xfful << CCAP_PLNSM_PLNSHNH_Pos)                /*!< CCAP_T::PLNSM: PLNSHNH Mask                */
+
+#define CCAP_PLNSM_PLNSVMH_Pos            (16)                                              /*!< CCAP_T::PLNSM: PLNSVMH Position            */
+#define CCAP_PLNSM_PLNSVMH_Msk            (0xfful << CCAP_PLNSM_PLNSVMH_Pos)                /*!< CCAP_T::PLNSM: PLNSVMH Mask                */
+
+#define CCAP_PLNSM_PLNSVNH_Pos            (24)                                              /*!< CCAP_T::PLNSM: PLNSVNH Position            */
+#define CCAP_PLNSM_PLNSVNH_Msk            (0xfful << CCAP_PLNSM_PLNSVNH_Pos)                /*!< CCAP_T::PLNSM: PLNSVNH Mask                */
 
 #define CCAP_CURADDRP_CURADDR_Pos         (0)                                               /*!< CCAP_T::CURADDRP: CURADDR Position         */
 #define CCAP_CURADDRP_CURADDR_Msk         (0xfffffffful << CCAP_CURADDRP_CURADDR_Pos)       /*!< CCAP_T::CURADDRP: CURADDR Mask             */

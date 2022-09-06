@@ -261,7 +261,7 @@ static rt_err_t fsa506_lcd_control(rt_device_t dev, int cmd, void *args)
     break;
 
     default:
-        break;
+        return -RT_ERROR;
     }
 
     return RT_EOK;

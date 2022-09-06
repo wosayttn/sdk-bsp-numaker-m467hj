@@ -427,9 +427,13 @@ static rt_err_t nu_canfd_configure(struct rt_can_device *can, struct can_configu
         goto exit_nu_canfd_configure;
     }
 
+    /* Lock protected registers & Run */
+    CANFD_RunToNormal(base, FALSE);
+
     /*Set the CAN Bit Rate and Operating mode*/
     CANFD_Open(base, psCANFDConf);
 
+    /* Enable interrupt. */
     NVIC_EnableIRQ(psNuCANFD->irqn0);
     NVIC_EnableIRQ(psNuCANFD->irqn1);
 
@@ -444,6 +448,8 @@ static rt_err_t nu_canfd_configure(struct rt_can_device *can, struct can_configu
 
     /* Enable interrupt */
     nu_canfd_ie(psNuCANFD);
+
+    //LOG_HEX("can register", 16, (void *)base, sizeof(CANFD_T));
 
     /* Lock protected registers & Run */
     CANFD_RunToNormal(base, TRUE);
@@ -468,12 +474,10 @@ static rt_err_t nu_canfd_control(struct rt_can_device *can, int cmd, void *arg)
     {
     case RT_DEVICE_CTRL_SET_INT:
         psNuCANFD->int_flag |= argval;
-        //nu_canfd_ie(psNuCANFD);
         return nu_canfd_configure(can, &can->config);
 
     case RT_DEVICE_CTRL_CLR_INT:
         psNuCANFD->int_flag &= ~argval;
-        //nu_canfd_ie(psNuCANFD);
         return nu_canfd_configure(can, &can->config);
 
 #if defined(RT_CAN_USING_HDR)

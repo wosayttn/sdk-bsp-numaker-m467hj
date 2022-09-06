@@ -31,6 +31,8 @@ int32_t g_CCAP_i32ErrCode = 0;       /*!< CCAP global error code */
  *             - PCLK    Sensor Pixel Clock Polarity. It should be either \ref CCAP_PAR_PCLKP_LOW or \ref CCAP_PAR_PCLKP_HIGH
  *             - INFMT   Sensor Input Data Format. It should be either \ref CCAP_PAR_INFMT_YUV422 or \ref CCAP_PAR_INFMT_RGB565
  *             - SNRTYPE Sensor Input Type. It should be either \ref CCAP_PAR_SENTYPE_CCIR601 or \ref CCAP_PAR_SENTYPE_CCIR656
+ *             - PLNFMT  Planar Output YUV Format
+ *                       - \ref 0 = YUV422
  *             - OUTFMT  Image Data Format Output to System Memory. It should be one of the following settings
  *                       - \ref CCAP_PAR_OUTFMT_YUV422
  *                       - \ref CCAP_PAR_OUTFMT_ONLY_Y
@@ -52,10 +54,10 @@ int32_t g_CCAP_i32ErrCode = 0;       /*!< CCAP global error code */
  *
  * @details    Initialize the Camera Capture Interface.
  */
-void CCAP_Open(uint32_t u32InFormat, uint32_t u32OutFormat)
+void CCAP_Open(CCAP_T *ccap, uint32_t u32InFormat, uint32_t u32OutFormat)
 {
-    CCAP->PAR = (CCAP->PAR & ~(0x000007BFUL)) | u32InFormat;
-    CCAP->CTL = (CCAP->CTL & ~(0x00000040UL)) | u32OutFormat;
+    ccap->PAR = (ccap->PAR & ~(0x000007BFUL)) | u32InFormat;
+    ccap->CTL = (ccap->CTL & ~(0x00000060UL)) | u32OutFormat;
 }
 
 /**
@@ -70,12 +72,12 @@ void CCAP_Open(uint32_t u32InFormat, uint32_t u32OutFormat)
  *
  * @details    This function is used to set cropping window starting address and size.
  */
-void CCAP_SetCroppingWindow(uint32_t u32VStart, uint32_t u32HStart, uint32_t u32Height, uint32_t u32Width)
+void CCAP_SetCroppingWindow(CCAP_T *ccap, uint32_t u32VStart, uint32_t u32HStart, uint32_t u32Height, uint32_t u32Width)
 {
-    CCAP->CWSP = (CCAP->CWSP & ~(CCAP_CWSP_CWSADDRV_Msk | CCAP_CWSP_CWSADDRH_Msk))
+    ccap->CWSP = (ccap->CWSP & ~(CCAP_CWSP_CWSADDRV_Msk | CCAP_CWSP_CWSADDRH_Msk))
                  | (((u32VStart << 16) | u32HStart));
 
-    CCAP->CWS = (CCAP->CWS & ~(CCAP_CWS_CWH_Msk | CCAP_CWS_CWW_Msk))
+    ccap->CWS = (ccap->CWS & ~(CCAP_CWS_CWH_Msk | CCAP_CWS_CWW_Msk))
                 | ((u32Height << 16) | u32Width);
 }
 
@@ -88,10 +90,55 @@ void CCAP_SetCroppingWindow(uint32_t u32VStart, uint32_t u32HStart, uint32_t u32
  *
  * @details    This function is used to set System Memory Packet Base Address 0 Register.
  */
-void CCAP_SetPacketBuf(uint32_t u32Address)
+void CCAP_SetPacketBuf(CCAP_T *ccap, uint32_t u32Address)
 {
-    CCAP->PKTBA0 = u32Address;
-    CCAP->CTL |= CCAP_CTL_UPDATE_Msk;
+    ccap->PKTBA0 = u32Address;
+    ccap->CTL |= CCAP_CTL_UPDATE_Msk;
+}
+
+/**
+ * @brief      Set System Memory Planar Y Base Address
+ *
+ * @param[in]  u32Address: Set CCAP_YBA register. It should be 0x0 ~ 0xFFFFFFFF.
+ *
+ * @return     None
+ *
+ * @details    This function is used to set System Memory Planar Y Base Address 0 Register.
+ */
+void CCAP_SetPlanarYBuf(CCAP_T *ccap, uint32_t u32Address)
+{
+    ccap->YBA = u32Address;
+    ccap->CTL |= CCAP_CTL_UPDATE_Msk;
+}
+
+/**
+ * @brief      Set System Memory Planar U Base Address
+ *
+ * @param[in]  u32Address: Set CCAP_UBA register. It should be 0x0 ~ 0xFFFFFFFF.
+ *
+ * @return     None
+ *
+ * @details    This function is used to set System Memory Planar U Base Address 0 Register.
+ */
+void CCAP_SetPlanarUBuf(CCAP_T *ccap, uint32_t u32Address)
+{
+    ccap->UBA = u32Address;
+    ccap->CTL |= CCAP_CTL_UPDATE_Msk;
+}
+
+/**
+ * @brief      Set System Memory Planar V Base Address
+ *
+ * @param[in]  u32Address: Set CCAP_VBA register. It should be 0x0 ~ 0xFFFFFFFF.
+ *
+ * @return     None
+ *
+ * @details    This function is used to set System Memory Planar V Base Address 0 Register.
+ */
+void CCAP_SetPlanarVBuf(CCAP_T *ccap, uint32_t u32Address)
+{
+    ccap->VBA = u32Address;
+    ccap->CTL |= CCAP_CTL_UPDATE_Msk;
 }
 
 /**
@@ -103,9 +150,9 @@ void CCAP_SetPacketBuf(uint32_t u32Address)
  *
  * @details    This function is used to disable Camera Capture Interface.
  */
-void CCAP_Close(void)
+void CCAP_Close(CCAP_T *ccap)
 {
-    CCAP->CTL &= ~CCAP_CTL_CCAPEN;
+    ccap->CTL &= ~CCAP_CTL_CCAPEN;
 }
 
 /**
@@ -121,9 +168,9 @@ void CCAP_Close(void)
  * @details    This function is used to enable Video Frame End Interrupt,
  *             Bus Master Transfer Error Interrupt and Memory Address Match Interrupt.
  */
-void CCAP_EnableInt(uint32_t u32IntMask)
+void CCAP_EnableInt(CCAP_T *ccap, uint32_t u32IntMask)
 {
-    CCAP->INT = (CCAP->INT & ~(CCAP_INT_VIEN_Msk | CCAP_INT_MEIEN_Msk | CCAP_INT_ADDRMIEN_Msk))
+    ccap->INT = (ccap->INT & ~(CCAP_INT_VIEN_Msk | CCAP_INT_MEIEN_Msk | CCAP_INT_ADDRMIEN_Msk))
                 | u32IntMask;
 }
 
@@ -140,9 +187,9 @@ void CCAP_EnableInt(uint32_t u32IntMask)
  * @details    This function is used to disable Video Frame End Interrupt,
  *             Bus Master Transfer Error Interrupt and Memory Address Match Interrupt.
  */
-void CCAP_DisableInt(uint32_t u32IntMask)
+void CCAP_DisableInt(CCAP_T *ccap, uint32_t u32IntMask)
 {
-    CCAP->INT = (CCAP->INT & ~(u32IntMask));
+    ccap->INT = (ccap->INT & ~(u32IntMask));
 }
 
 /**
@@ -155,9 +202,9 @@ void CCAP_DisableInt(uint32_t u32IntMask)
  *
  * @details    This function is used to select monochrome CMOS sensor and set data width.
  */
-void CCAP_EnableMono(uint32_t u32Interface)
+void CCAP_EnableMono(CCAP_T *ccap, uint32_t u32Interface)
 {
-    CCAP->CTL = (CCAP->CTL & ~CCAP_CTL_MY8_MY4) | CCAP_CTL_MONO_Msk | u32Interface;
+    ccap->CTL = (ccap->CTL & ~CCAP_CTL_MY8_MY4) | CCAP_CTL_MONO_Msk | u32Interface;
 }
 
 /**
@@ -169,9 +216,9 @@ void CCAP_EnableMono(uint32_t u32Interface)
  *
  * @details    This function is used to disable monochrome CMOS sensor selection.
  */
-void CCAP_DisableMono(void)
+void CCAP_DisableMono(CCAP_T *ccap)
 {
-    CCAP->CTL &= ~CCAP_CTL_MONO_Msk;
+    ccap->CTL &= ~CCAP_CTL_MONO_Msk;
 }
 
 /**
@@ -183,10 +230,10 @@ void CCAP_DisableMono(void)
  *
  * @details    This function is used to enable luminance Y8 to Y1 function and set its threshold value.
  */
-void CCAP_EnableLumaYOne(uint32_t u32th)
+void CCAP_EnableLumaYOne(CCAP_T *ccap, uint32_t u32th)
 {
-    CCAP->CTL |= CCAP_CTL_Luma_Y_One_Msk;
-    CCAP->LUMA_Y1_THD = u32th & 0xff;
+    ccap->CTL |= CCAP_CTL_Luma_Y_One_Msk;
+    ccap->LUMA_Y1_THD = u32th & 0xff;
 }
 
 /**
@@ -199,9 +246,9 @@ void CCAP_EnableLumaYOne(uint32_t u32th)
  * @details    This function is used to disable luminance Y8 to Y1 function.
  *
  */
-void CCAP_DisableLumaYOne(void)
+void CCAP_DisableLumaYOne(CCAP_T *ccap)
 {
-    CCAP->CTL &= ~CCAP_CTL_Luma_Y_One_Msk;
+    ccap->CTL &= ~CCAP_CTL_Luma_Y_One_Msk;
 }
 
 /**
@@ -213,9 +260,9 @@ void CCAP_DisableLumaYOne(void)
  *
  * @details    This function is used to start Camera Capture Interface function.
  */
-void CCAP_Start(void)
+void CCAP_Start(CCAP_T *ccap)
 {
-    CCAP->CTL |= CCAP_CTL_CCAPEN;
+    ccap->CTL |= CCAP_CTL_CCAPEN;
 }
 
 /**
@@ -231,16 +278,16 @@ void CCAP_Start(void)
  *
  * @note       This function sets g_CCAP_i32ErrCode to CCAP_TIMEOUT_ERR if the CCAP_IS_STOPPED() longer than expected.
  */
-void CCAP_Stop(uint32_t u32FrameComplete)
+void CCAP_Stop(CCAP_T *ccap, uint32_t u32FrameComplete)
 {
-    uint32_t u32TimeOutCount = SystemCoreClock << 1; /* 2 second */
+    uint32_t u32TimeOutCount = SystemCoreClock;
 
     if (u32FrameComplete == FALSE)
-        CCAP->CTL &= ~CCAP_CTL_CCAPEN;
+        ccap->CTL &= ~CCAP_CTL_CCAPEN;
     else
     {
-        CCAP->CTL |= CCAP_CTL_SHUTTER_Msk;
-        while (!CCAP_IS_STOPPED())
+        ccap->CTL |= CCAP_CTL_SHUTTER_Msk;
+        while (!CCAP_IS_STOPPED(ccap))
         {
             if (--u32TimeOutCount == 0)
             {
@@ -263,7 +310,7 @@ void CCAP_Stop(uint32_t u32FrameComplete)
  *
  * @details    This function is used to set Packet Scaling Vertical and Horizontal Factor register.
  */
-void CCAP_SetPacketScaling(uint32_t u32VNumerator, uint32_t u32VDenominator, uint32_t u32HNumerator, uint32_t u32HDenominator)
+void CCAP_SetPacketScaling(CCAP_T *ccap, uint32_t u32VNumerator, uint32_t u32VDenominator, uint32_t u32HNumerator, uint32_t u32HDenominator)
 {
     uint32_t u32NumeratorL, u32NumeratorH;
     uint32_t u32DenominatorL, u32DenominatorH;
@@ -272,19 +319,55 @@ void CCAP_SetPacketScaling(uint32_t u32VNumerator, uint32_t u32VDenominator, uin
     u32NumeratorH = u32VNumerator >> 8;
     u32DenominatorL = u32VDenominator & 0xFF;
     u32DenominatorH = u32VDenominator >> 8;
-    CCAP->PKTSL = (CCAP->PKTSL & ~(CCAP_PKTSL_PKTSVNL_Msk | CCAP_PKTSL_PKTSVML_Msk))
-                  | ((u32NumeratorL << 24) | (u32DenominatorL << 16));
-    CCAP->PKTSM = (CCAP->PKTSM & ~(CCAP_PKTSM_PKTSVNH_Msk | CCAP_PKTSM_PKTSVMH_Msk))
-                  | ((u32NumeratorH << 24) | (u32DenominatorH << 16));
+    ccap->PKTSL = (ccap->PKTSL & ~(CCAP_PKTSL_PKTSVNL_Msk | CCAP_PKTSL_PKTSVML_Msk))
+                  | ((u32NumeratorL << CCAP_PKTSL_PKTSVNL_Pos) | (u32DenominatorL << CCAP_PKTSL_PKTSVML_Pos));
+    ccap->PKTSM = (ccap->PKTSM & ~(CCAP_PKTSM_PKTSVNH_Msk | CCAP_PKTSM_PKTSVMH_Msk))
+                  | ((u32NumeratorH << CCAP_PKTSL_PKTSVNL_Pos) | (u32DenominatorH << CCAP_PKTSL_PKTSVML_Pos));
 
     u32NumeratorL = u32HNumerator & 0xFF;
     u32NumeratorH = u32HNumerator >> 8;
     u32DenominatorL = u32HDenominator & 0xFF;
     u32DenominatorH = u32HDenominator >> 8;
-    CCAP->PKTSL = (CCAP->PKTSL & ~(CCAP_PKTSL_PKTSHNL_Msk | CCAP_PKTSL_PKTSHML_Msk))
-                  | ((u32NumeratorL << 8) | u32DenominatorL);
-    CCAP->PKTSM = (CCAP->PKTSM & ~(CCAP_PKTSM_PKTSHNH_Msk | CCAP_PKTSM_PKTSHMH_Msk))
-                  | ((u32NumeratorH << 8) | u32DenominatorH);
+    ccap->PKTSL = (ccap->PKTSL & ~(CCAP_PKTSL_PKTSHNL_Msk | CCAP_PKTSL_PKTSHML_Msk))
+                  | ((u32NumeratorL << CCAP_PKTSL_PKTSHNL_Pos) | (u32DenominatorL << CCAP_PKTSL_PKTSHML_Pos));
+    ccap->PKTSM = (ccap->PKTSM & ~(CCAP_PKTSM_PKTSHNH_Msk | CCAP_PKTSM_PKTSHMH_Msk))
+                  | ((u32NumeratorH << CCAP_PKTSL_PKTSHNL_Pos) | (u32DenominatorH << CCAP_PKTSL_PKTSHML_Pos));
+}
+
+/**
+ * @brief      Set Planar Scaling Factor
+ *
+ * @param[in]  u32VNumerator:   Planar Scaling Vertical Factor N. It should be 0x0 ~ 0xFFFF.
+ * @param[in]  u32VDenominator: Planar Scaling Vertical Factor M. It should be 0x0 ~ 0xFFFF.
+ * @param[in]  u32HNumerator:   Planar Scaling Horizontal Factor N. It should be 0x0 ~ 0xFFFF.
+ * @param[in]  u32HDenominator: Planar Scaling Horizontal Factor M. It should be 0x0 ~ 0xFFFF.
+ *
+ * @return     None
+ *
+ * @details    This function is used to set Planar Scaling Vertical and Horizontal Factor register.
+ */
+void CCAP_SetPlanarScaling(CCAP_T *ccap, uint32_t u32VNumerator, uint32_t u32VDenominator, uint32_t u32HNumerator, uint32_t u32HDenominator)
+{
+    uint32_t u32NumeratorL, u32NumeratorH;
+    uint32_t u32DenominatorL, u32DenominatorH;
+
+    u32NumeratorL = u32VNumerator & 0xFF;
+    u32NumeratorH = u32VNumerator >> 8;
+    u32DenominatorL = u32VDenominator & 0xFF;
+    u32DenominatorH = u32VDenominator >> 8;
+    ccap->PLNSL = (ccap->PLNSL & ~(CCAP_PLNSL_PLNSVNL_Msk | CCAP_PLNSL_PLNSVML_Msk))
+                  | ((u32NumeratorL << CCAP_PLNSL_PLNSVNL_Pos) | (u32DenominatorL << CCAP_PLNSL_PLNSVML_Pos));
+    ccap->PLNSM = (ccap->PLNSM & ~(CCAP_PLNSM_PLNSVNH_Msk | CCAP_PLNSM_PLNSVMH_Msk))
+                  | ((u32NumeratorH << CCAP_PLNSL_PLNSVNL_Pos) | (u32DenominatorH << CCAP_PLNSL_PLNSVML_Pos));
+
+    u32NumeratorL = u32HNumerator & 0xFF;
+    u32NumeratorH = u32HNumerator >> 8;
+    u32DenominatorL = u32HDenominator & 0xFF;
+    u32DenominatorH = u32HDenominator >> 8;
+    ccap->PLNSL = (ccap->PLNSL & ~(CCAP_PLNSL_PLNSHNL_Msk | CCAP_PLNSL_PLNSHML_Msk))
+                  | ((u32NumeratorL << CCAP_PLNSL_PLNSHNL_Pos) | (u32DenominatorL << CCAP_PLNSL_PLNSHML_Pos));
+    ccap->PLNSM = (ccap->PLNSM & ~(CCAP_PLNSM_PLNSHNH_Msk | CCAP_PLNSM_PLNSHMH_Msk))
+                  | ((u32NumeratorH << CCAP_PLNSL_PLNSHNL_Pos) | (u32DenominatorH << CCAP_PLNSL_PLNSHML_Pos));
 }
 
 /**
@@ -296,10 +379,25 @@ void CCAP_SetPacketScaling(uint32_t u32VNumerator, uint32_t u32VDenominator, uin
  *
  * @details   This function is used to set Packet Frame Output Pixel Stride Width.
  */
-void CCAP_SetPacketStride(uint32_t u32Stride)
+void CCAP_SetPacketStride(CCAP_T *ccap, uint32_t u32Stride)
 {
-    CCAP->STRIDE = (CCAP->STRIDE & ~CCAP_STRIDE_PKTSTRIDE_Msk) | u32Stride;
+    ccap->STRIDE = (ccap->STRIDE & ~CCAP_STRIDE_PKTSTRIDE_Msk) | (u32Stride << CCAP_STRIDE_PKTSTRIDE_Pos);
 }
+
+/**
+ * @brief     Set Planar Frame Output Pixel Stride Width
+ *
+ * @param[in] u32Stride: Set CCAP_STRIDE register. It should be 0x0 ~ 0x3FFF.
+ *
+ * @return    None
+ *
+ * @details   This function is used to set Planar Frame Output Pixel Stride Width.
+ */
+void CCAP_SetPlanarStride(CCAP_T *ccap, uint32_t u32Stride)
+{
+    ccap->STRIDE = (ccap->STRIDE & ~CCAP_STRIDE_PLNSTRIDE_Msk) | (u32Stride << CCAP_STRIDE_PLNSTRIDE_Pos);
+}
+
 
 /*@}*/ /* end of group CCAP_EXPORTED_FUNCTIONS */
 

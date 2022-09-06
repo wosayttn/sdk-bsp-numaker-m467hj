@@ -7,6 +7,7 @@
 | BPWM | RT_Device_Class_Miscellaneous (PWM) | ***bpwm[0-1]*** |
 | BPWM (Capture function)| RT_Device_Class_Miscellaneous (Input capture) | ***bpwm[0-1]i[0-5]*** |
 | CANFD | RT_Device_Class_CAN | ***canfd[0-3]*** |
+| CCAP | RT_Device_Class_Miscellaneous | ***ccap0*** |
 | CRC | RT_Device_Class_Miscellaneous (HW Crypto) | ***hwcryto*** |
 | CRYPTO | RT_Device_Class_Miscellaneous (HW Crypto) | ***hwcryto*** |
 | DAC | RT_Device_Class_Miscellaneous (DAC) | ***dac[0-1]*** |
@@ -46,4 +47,4 @@
 ## Resources
 * [Download M460 TRM][1]
 
-  [1]: 
+  [1]: Coming soon

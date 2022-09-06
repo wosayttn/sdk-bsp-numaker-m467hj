@@ -21,7 +21,7 @@ board:
   vendor: Nuvoton
   version: v1.0
 chip:
-  chip_name: M467HJHAE
+  chip_name: M467HJHAN
   clock_source: HXT
   device_vendor: Nuvoton
   family_name: NuMicro
@@ -42,13 +42,15 @@ features:
 - External FLASH：W25Q32 (SPI，4MB)
 - NAU88C22 Audio Codec
 - 3 LEDs
-- 3 Buttons
+- 3 Button
+- Thermal Sensor 
 - Arduino UNO Compatible Interface
 - USB to TTL function
 - RJ-45 Connector
 - USB 1.1 OTG
 - USB 2.0 OTG
 - TF card Connector
+- Camera capture Connector
 - Nu-Link-Me
 features_zh:
 - 192MHz 主频
@@ -59,12 +61,14 @@ features_zh:
 - NAU88C22 Audio Codec
 - 3 LEDs
 - 3 Buttons
+- Thermal Sensor
 - Arduino UNO Compatible Interface
 - USB 转串口
 - RJ-45 接口
 - USB 1.1 OTG
 - USB 2.0 OTG
 - TF card 接口
+- Camera capture Connector
 - Nu-Link-Me
 pkg_type: Board_Support_Packages
 pkg_vendor: Nuvoton
