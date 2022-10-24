@@ -22,7 +22,7 @@
 #define LOG_TAG    "drv.canfd"
 #undef  DBG_ENABLE
 #define DBG_SECTION_NAME   LOG_TAG
-#define DBG_LEVEL   LOG_LVL_ERROR
+#define DBG_LEVEL       LOG_LVL_ERROR
 #define DBG_COLOR
 #include <rtdbg.h>
 
@@ -413,7 +413,7 @@ static rt_err_t nu_canfd_configure(struct rt_can_device *can, struct can_configu
         psCANFDConf->sBtConfig.evTestMode = eCANFD_NORMAL;
         break;
 
-    case RT_CAN_MODE_LISEN:     // Bus monitor Mode, can't start a transmission
+    case RT_CAN_MODE_LISTEN:     // Bus monitor Mode, can't start a transmission
         psCANFDConf->sBtConfig.evTestMode = eCANFD_BUS_MONITOR;
         break;
 
@@ -421,21 +421,14 @@ static rt_err_t nu_canfd_configure(struct rt_can_device *can, struct can_configu
         psCANFDConf->sBtConfig.evTestMode = eCANFD_LOOPBACK_INTERNAL;
         break;
 
-    case RT_CAN_MODE_LOOPBACKANLISEN:
+    case RT_CAN_MODE_LOOPBACKANLISTEN:
     default:
-        rt_kprintf("Unsupported Operating mode");
+        rt_kprintf("Unsupported Operating mode\n");
         goto exit_nu_canfd_configure;
     }
 
-    /* Lock protected registers & Run */
-    CANFD_RunToNormal(base, FALSE);
-
     /*Set the CAN Bit Rate and Operating mode*/
     CANFD_Open(base, psCANFDConf);
-
-    /* Enable interrupt. */
-    NVIC_EnableIRQ(psNuCANFD->irqn0);
-    NVIC_EnableIRQ(psNuCANFD->irqn1);
 
     /* Set FIFO policy */
 #if defined(RT_CAN_USING_HDR)
@@ -449,7 +442,7 @@ static rt_err_t nu_canfd_configure(struct rt_can_device *can, struct can_configu
     /* Enable interrupt */
     nu_canfd_ie(psNuCANFD);
 
-    //LOG_HEX("can register", 16, (void *)base, sizeof(CANFD_T));
+    //LOG_HEX("canfd", 16, (void *)base, sizeof(CANFD_T));
 
     /* Lock protected registers & Run */
     CANFD_RunToNormal(base, TRUE);
@@ -530,9 +523,9 @@ static rt_err_t nu_canfd_control(struct rt_can_device *can, int cmd, void *arg)
 
     case RT_CAN_CMD_SET_MODE:
         if ((argval == RT_CAN_MODE_NORMAL) ||
-                (argval == RT_CAN_MODE_LISEN) ||
+                (argval == RT_CAN_MODE_LISTEN) ||
                 (argval == RT_CAN_MODE_LOOPBACK) ||
-                (argval == RT_CAN_MODE_LOOPBACKANLISEN))
+                (argval == RT_CAN_MODE_LOOPBACKANLISTEN))
         {
             if (argval != can->config.mode)
             {
@@ -743,6 +736,10 @@ static int rt_hw_canfd_init(void)
         /* Register can device */
         ret = rt_hw_can_register(&nu_canfd_arr[i].dev, nu_canfd_arr[i].name, &nu_canfd_ops, NULL);
         RT_ASSERT(ret == RT_EOK);
+
+        /* Unmask interrupt. */
+        NVIC_EnableIRQ(nu_canfd_arr[i].irqn0);
+        NVIC_EnableIRQ(nu_canfd_arr[i].irqn1);
     }
 
     return (int)ret;

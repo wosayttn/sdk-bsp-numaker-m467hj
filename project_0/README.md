@@ -97,7 +97,9 @@ You can use Tera Term terminate emulator (or other software) to type commands of
 
 * [Download Board User Manual][2]
 * [Download MCU TRM][3]
+* [Download MCU Datasheet][4]
 
   [1]: https://direct.nuvoton.com/en/numaker-m467hj
   [2]: https://www.nuvoton.com/resource-files/en-us--UM_NuMaker-M467HJ_EN_Rev1.00.pdf
-  [3]: Coming soon
+  [3]: https://www.nuvoton.com/resource-download.jsp?tp_GUID=DA05-M460
+  [4]: https://www.nuvoton.com/resource-download.jsp?tp_GUID=DA00-M460

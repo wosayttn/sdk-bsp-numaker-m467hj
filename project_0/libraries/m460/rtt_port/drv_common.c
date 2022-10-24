@@ -18,6 +18,12 @@
 #include "board.h"
 #include "nutool_modclkcfg.h"
 
+#define LOG_TAG    "drv.common"
+#undef  DBG_ENABLE
+#define DBG_SECTION_NAME   LOG_TAG
+#define DBG_LEVEL      LOG_LVL_DBG
+#define DBG_COLOR
+#include <rtdbg.h>
 
 extern void nutool_pincfg_init(void);
 /**
@@ -152,3 +158,73 @@ int reboot(int argc, char **argv)
     return 0;
 }
 MSH_CMD_EXPORT(reboot, Reboot System);
+
+void devmem(int argc, char *argv[])
+{
+    volatile unsigned int u32Addr;
+    unsigned int value = 0, mode = 0;
+
+    if (argc < 2 || argc > 3)
+    {
+        goto exit_devmem;
+    }
+
+    if (argc == 3)
+    {
+        if (sscanf(argv[2], "0x%x", &value) != 1)
+            goto exit_devmem;
+        mode = 1; //Write
+    }
+
+    if (sscanf(argv[1], "0x%x", &u32Addr) != 1)
+        goto exit_devmem;
+    else if (!u32Addr || u32Addr & (4 - 1))
+        goto exit_devmem;
+
+    if (mode)
+    {
+        *((volatile uint32_t *)u32Addr) = value;
+    }
+    rt_kprintf("0x%08x\n", *((volatile uint32_t *)u32Addr));
+
+    return;
+exit_devmem:
+    rt_kprintf("Read: devmem <physical address in hex>\n");
+    rt_kprintf("Write: devmem <physical address in hex> <value in hex format>\n");
+    return;
+}
+MSH_CMD_EXPORT(devmem, dump device registers);
+
+void devmem2(int argc, char *argv[])
+{
+    volatile unsigned int u32Addr;
+    unsigned int value = 0, word_count = 1;
+
+    if (argc < 2 || argc > 3)
+    {
+        goto exit_devmem;
+    }
+
+    if (argc == 3)
+    {
+        if (sscanf(argv[2], "%d", &value) != 1)
+            goto exit_devmem;
+        word_count = value;
+    }
+
+    if (sscanf(argv[1], "0x%x", &u32Addr) != 1)
+        goto exit_devmem;
+    else if (!u32Addr || u32Addr & (4 - 1))
+        goto exit_devmem;
+
+    if ( word_count > 0 )
+    {
+        LOG_HEX("devmem", 16, (void *)u32Addr, word_count*sizeof(rt_base_t));
+    }
+
+    return;
+exit_devmem:
+    rt_kprintf("devmem2: <physical address in hex> <count in dec>\n");
+    return;
+}
+MSH_CMD_EXPORT(devmem2, dump device registers);

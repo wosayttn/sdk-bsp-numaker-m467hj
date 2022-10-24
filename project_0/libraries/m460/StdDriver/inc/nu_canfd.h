@@ -130,43 +130,43 @@ typedef enum
 {
     eCANFD_NORMAL = 0,              /*!< None, Normal mode. */
 
-	  /* 
+    /*
     Support:
-    (1) to receive data frames 
+    (1) to receive data frames
     (2) to receive remote frames
     (3) to give acknowledge to valid frames
     Not support:
     (1) data frames sending
     (2) remote frames sending
     (3) active error frames or overload frames sending
-	  */
+    */
     eCANFD_RESTRICTED_OPERATION,    /*!< Receive external RX frame and always keep recessive state or send dominate bit on ACK bit on TX pin. */
 
-	  /* 
+    /*
     Support:
     (1) to receive valid data frames
     (2) to receive valid remote frames
     Not support:
     (1) transmission start
     (2) acknowledge to valid frames
-	  */
+    */
     eCANFD_BUS_MONITOR,             /*!< Receive external RX frame and always keep recessive state on TX pin. */
 
-	  /* 
+    /*
     Support:
     (1) Loopback
     (2) Also send out frames
     Not support:
     (1) to receive external frame
-	  */
+    */
     eCANFD_LOOPBACK_EXTERNAL,       /*!< Won't receive external RX frame. */
-	  /* 
+    /*
     Support:
     (1) Loopback
     Not support:
     (1) to receive external frame
     (2) transmission start
-	  */
+    */
     eCANFD_LOOPBACK_INTERNAL        /*!< Won't receive external RX frame and always keep recessive state on TX pin */
 } E_CANFD_TEST_MODE;
 
@@ -434,22 +434,6 @@ typedef struct
 #define CANFD_ERR_TIMEOUT        (-2L)              /*!< CANFD operation abort due to timeout error */
 #define CANFD_READ_REG_TIMEOUT   (48UL)             /*!< CANFD read register time-out count */
 
-__STATIC_INLINE uint32_t CANFD_ReadReg(uint32_t u32RegAddr)
-{
-    uint32_t u32ReadReg;
-    uint32_t u32TimeOutCnt = CANFD_READ_REG_TIMEOUT;
-    u32ReadReg = 0UL;
-    do{
-        u32ReadReg = inpw((uint32_t *)u32RegAddr);
-        if(--u32TimeOutCnt == 0UL)
-        {
-            break;
-        }
-    }while(u32ReadReg == 0UL);
-
-    return u32ReadReg;
-}
-
 void CANFD_Open(CANFD_T *canfd, CANFD_FD_T *psCanfdStr);
 void CANFD_Close(CANFD_T *canfd);
 void CANFD_EnableInt(CANFD_T *canfd, uint32_t u32IntLine0, uint32_t u32IntLine1, uint32_t u32TXBTIE, uint32_t u32TXBCIE);
@@ -457,12 +441,6 @@ void CANFD_DisableInt(CANFD_T *canfd, uint32_t u32IntLine0, uint32_t u32IntLine1
 uint32_t CANFD_TransmitTxMsg(CANFD_T *canfd, uint32_t u32TxBufIdx, CANFD_FD_MSG_T *psTxMsg);
 uint32_t CANFD_TransmitDMsg(CANFD_T *canfd, uint32_t u32TxBufIdx, CANFD_FD_MSG_T *psTxMsg);
 void CANFD_SetGFC(CANFD_T *canfd, E_CANFD_ACC_NON_MATCH_FRM eNMStdFrm, E_CANFD_ACC_NON_MATCH_FRM eEMExtFrm, uint32_t u32RejRmtStdFrm, uint32_t u32RejRmtExtFrm);
-void CANFD_InitRxFifo(CANFD_T *canfd, uint32_t u32RxFifoNum, CANFD_RAM_PART_T *psRamConfig, CANFD_ELEM_SIZE_T *psElemSize, uint32_t u32FifoWM, E_CANFD_DATA_FIELD_SIZE eFifoSize);
-void CANFD_InitRxDBuf(CANFD_T *canfd, CANFD_RAM_PART_T *psRamConfig, CANFD_ELEM_SIZE_T *psElemSize, E_CANFD_DATA_FIELD_SIZE eRxBufSize);
-void CANFD_InitTxDBuf(CANFD_T *canfd, CANFD_RAM_PART_T *psRamConfig, CANFD_ELEM_SIZE_T *psElemSize, E_CANFD_DATA_FIELD_SIZE eTxBufSize);
-void CANFD_InitTxEvntFifo(CANFD_T *canfd, CANFD_RAM_PART_T *psRamConfig, CANFD_ELEM_SIZE_T *psElemSize, uint32_t u32FifoWaterLvl);
-void CANFD_ConfigSIDFC(CANFD_T *canfd, CANFD_RAM_PART_T *psRamConfig, CANFD_ELEM_SIZE_T *psElemSize);
-void CANFD_ConfigXIDFC(CANFD_T *canfd, CANFD_RAM_PART_T *psRamConfig, CANFD_ELEM_SIZE_T *psElemSize);
 void CANFD_SetSIDFltr(CANFD_T *canfd, uint32_t u32FltrIdx, uint32_t u32Filter);
 void CANFD_SetXIDFltr(CANFD_T *canfd, uint32_t u32FltrIdx, uint32_t u32FilterLow, uint32_t u32FilterHigh);
 uint32_t CANFD_ReadRxBufMsg(CANFD_T *canfd, uint8_t u8MbIdx, CANFD_FD_MSG_T *psMsgBuf);
@@ -480,6 +458,7 @@ int32_t CANFD_RunToNormal(CANFD_T *canfd, uint8_t u8Enable);
 void CANFD_GetDefaultConfig(CANFD_FD_T *psConfig, uint8_t u8OpMode);
 void CANFD_ClearStatusFlag(CANFD_T *canfd, uint32_t u32InterruptFlag);
 uint32_t CANFD_GetStatusFlag(CANFD_T *canfd, uint32_t u32IntTypeFlag);
+uint32_t CANFD_ReadReg(__I uint32_t *pu32RegAddr);
 
 /*@}*/ /* end of group CANFD_EXPORTED_FUNCTIONS */
 

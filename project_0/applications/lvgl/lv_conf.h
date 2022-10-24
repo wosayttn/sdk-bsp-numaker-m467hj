@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2021, RT-Thread Development Team
+ * Copyright (c) 2006-2022, RT-Thread Development Team
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -24,6 +24,7 @@
 
 //#define LV_USE_DEMO_RTT_MUSIC         1
 #if LV_USE_DEMO_RTT_MUSIC
+    #define LV_COLOR_SCREEN_TRANSP        1
     #define LV_DEMO_RTT_MUSIC_AUTO_PLAY   1
 
     #define LV_USE_DEMO_MUSIC             1

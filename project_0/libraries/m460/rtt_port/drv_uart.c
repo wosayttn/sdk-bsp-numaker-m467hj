@@ -484,7 +484,7 @@ void UART9_IRQHandler(void)
 static void nu_uart_isr(nu_uart_t serial)
 {
     /* Get base address of uart register */
-    UART_T *uart_base = ((nu_uart_t)serial)->uart_base;
+    UART_T *uart_base = serial->uart_base;
 
     /* Get interrupt event */
     uint32_t u32IntSts = uart_base->INTSTS;
@@ -723,7 +723,6 @@ static void nu_pdma_uart_rx_cb(void *pvOwner, uint32_t u32Events)
     UART_T *uart_base = puart->uart_base;
 
     transferred_rxbyte = nu_pdma_transferred_byte_get(puart->pdma_chanid_rx, puart->rxdma_trigger_len);
-
     if (u32Events & (NU_PDMA_EVENT_TRANSFER_DONE | NU_PDMA_EVENT_TIMEOUT))
     {
         if (u32Events & NU_PDMA_EVENT_TRANSFER_DONE)
@@ -737,7 +736,10 @@ static void nu_pdma_uart_rx_cb(void *pvOwner, uint32_t u32Events)
 
         recv_len = transferred_rxbyte - puart->rx_write_offset;
 
-        puart->rx_write_offset = transferred_rxbyte % puart->rxdma_trigger_len;
+        if (recv_len > 0)
+        {
+            puart->rx_write_offset = transferred_rxbyte % puart->rxdma_trigger_len;
+        }
     }
 
     if ((serial->config.bufsz == 0) && (u32Events & NU_PDMA_EVENT_TRANSFER_DONE))
@@ -745,7 +747,7 @@ static void nu_pdma_uart_rx_cb(void *pvOwner, uint32_t u32Events)
         recv_len = puart->rxdma_trigger_len;
     }
 
-    if (recv_len)
+    if (recv_len > 0)
     {
         rt_hw_serial_isr(&puart->dev, RT_SERIAL_EVENT_RX_DMADONE | (recv_len << 8));
     }
@@ -876,7 +878,10 @@ static rt_err_t nu_uart_control(struct rt_serial_device *serial, int cmd, void *
         {
             /* Disable Receive Line interrupt & Stop DMA RX transfer. */
 #if defined(RT_SERIAL_USING_DMA)
-            nu_pdma_channel_terminate(psNuUart->pdma_chanid_rx);
+            if (psNuUart->dma_flag & RT_DEVICE_FLAG_DMA_RX)
+            {
+                nu_pdma_channel_terminate(psNuUart->pdma_chanid_rx);
+            }
             UART_DISABLE_INT(uart_base, UART_INTEN_RLSIEN_Msk | UART_INTEN_RXPDMAEN_Msk);
 #endif
         }
@@ -913,12 +918,13 @@ static rt_err_t nu_uart_control(struct rt_serial_device *serial, int cmd, void *
 #if defined(RT_SERIAL_USING_DMA)
         UART_DISABLE_INT(uart_base, UART_INTEN_RLSIEN_Msk | UART_INTEN_RXPDMAEN_Msk);
         UART_DISABLE_INT(uart_base, UART_INTEN_TXPDMAEN_Msk);
-        nu_pdma_channel_terminate(psNuUart->pdma_chanid_tx);
-        nu_pdma_channel_terminate(psNuUart->pdma_chanid_rx);
-#endif
 
-        /* Reset this module */
-        SYS_ResetModule(psNuUart->uart_rst);
+        if (psNuUart->dma_flag != 0)
+        {
+            nu_pdma_channel_terminate(psNuUart->pdma_chanid_tx);
+            nu_pdma_channel_terminate(psNuUart->pdma_chanid_rx);
+        }
+#endif
 
         /* Close UART port */
         UART_Close(uart_base);

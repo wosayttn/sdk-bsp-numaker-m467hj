@@ -47,4 +47,4 @@
 ## Resources
 * [Download M460 TRM][1]
 
-  [1]: Coming soon
+  [1]: https://www.nuvoton.com/resource-download.jsp?tp_GUID=DA05-M460

@@ -27,7 +27,7 @@
 #endif
 
 #if defined(__ICCARM__)
-    #pragma diag_suppress=Pm073, Pm143        /* Misra C rule 14.7 */
+    #pragma diag_suppress=Pm073, Pm143, Pe223        /* Misra C rule 14.7 */
 #endif
 
 #define TIMEOUT_ECC        SystemCoreClock    /* 1 second time-out */
