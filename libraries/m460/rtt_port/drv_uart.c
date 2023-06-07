@@ -1081,9 +1081,10 @@ rt_err_t rt_hw_uart_init(void)
         nu_uart_arr[i].dma_flag = 0;
         nu_hw_uart_dma_allocate(&nu_uart_arr[i]);
         flag |= nu_uart_arr[i].dma_flag;
-#endif
 
         rt_memset(&nu_uart_arr[i].dmabuf, 0, sizeof(struct nu_rxbuf_ctx));
+#endif
+
         ret = rt_hw_serial_register(&nu_uart_arr[i].dev, nu_uart_arr[i].name, flag, NULL);
         RT_ASSERT(ret == RT_EOK);
     }
