@@ -30,7 +30,6 @@ u32 synopGMACReadReg(u32 RegBase, u32 RegOffset)
 
 void synopGMACWriteReg(u32 RegBase, u32 RegOffset, u32 RegData)
 {
-
     u32 addr = RegBase + (u32)RegOffset;
 
 #if SYNOP_REG_DEBUG

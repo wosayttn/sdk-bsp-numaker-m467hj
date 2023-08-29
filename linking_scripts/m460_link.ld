@@ -63,6 +63,12 @@ SECTIONS
         KEEP(*(UtestTcTab))
         __rt_utest_tc_tab_end = .;
 
+        /* section information for cherryusb usb host class */
+        . = ALIGN(4);
+        __usbh_class_info_start__ = .;
+        KEEP(*(.usbh_class_info))
+        __usbh_class_info_end__ = .;
+
         . = ALIGN(4);
         _etext = .;
     } > CODE = 0

@@ -1,0 +1,10 @@
+from building import *
+
+cwd = GetCurrentDir()
+src = Glob('*.c')
+CPPPATH = [cwd]
+
+group = DefineGroup('SNMPv3-port', src, depend = ['RT_LWIP_SNMP'], CPPPATH = CPPPATH)
+
+Return('group')
+
