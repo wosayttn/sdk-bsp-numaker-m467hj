@@ -45,6 +45,10 @@
 #include "lwip/timeouts.h"
 
 #if LWIP_SNMP && LWIP_SNMP_V3
+
+#define DEF_AUTH_KEY       "nuvoton_no1"
+#define DEF_PRIV_KEY       DEF_AUTH_KEY
+
 struct user_table_entry
 {
     char               username[32];
@@ -56,8 +60,11 @@ struct user_table_entry
 
 static struct user_table_entry user_table[] =
 {
-    { "lwip", SNMP_V3_AUTH_ALGO_INVAL, "", SNMP_V3_PRIV_ALGO_INVAL, "" },
-    { "piwl", SNMP_V3_AUTH_ALGO_INVAL, "", SNMP_V3_PRIV_ALGO_INVAL, "" },
+    { "lwip",   SNMP_V3_AUTH_ALGO_INVAL, "", SNMP_V3_PRIV_ALGO_INVAL, "" },
+    { "md5des", SNMP_V3_AUTH_ALGO_INVAL, "", SNMP_V3_PRIV_ALGO_INVAL, "" },
+    { "md5aes", SNMP_V3_AUTH_ALGO_INVAL, "", SNMP_V3_PRIV_ALGO_INVAL, "" },
+    { "shades", SNMP_V3_AUTH_ALGO_INVAL, "", SNMP_V3_PRIV_ALGO_INVAL, "" },
+    { "shaaes", SNMP_V3_AUTH_ALGO_INVAL, "", SNMP_V3_PRIV_ALGO_INVAL, "" },
     { "test", SNMP_V3_AUTH_ALGO_INVAL, "", SNMP_V3_PRIV_ALGO_INVAL, "" }
 };
 
@@ -318,6 +325,7 @@ snmpv3_get_user(const char *username, snmpv3_auth_algo_t *auth_algo, u8_t *auth_
 
     p = get_user(username);
 
+
     if (!p)
     {
         return ERR_VAL;
@@ -339,6 +347,7 @@ snmpv3_get_user(const char *username, snmpv3_auth_algo_t *auth_algo, u8_t *auth_
     {
         MEMCPY(priv_key, p->priv_key, sizeof(p->priv_key));
     }
+
     return ERR_OK;
 }
 
@@ -413,10 +422,29 @@ snmpv3_dummy_init(void)
     snmpv3_set_engine_id("FOO", 3);
 
     snmpv3_set_user_auth_algo("lwip", SNMP_V3_AUTH_ALGO_SHA);
-    snmpv3_set_user_auth_key("lwip", "nuvoton_no1");
-
+    snmpv3_set_user_auth_key("lwip",  DEF_AUTH_KEY);
     snmpv3_set_user_priv_algo("lwip", SNMP_V3_PRIV_ALGO_AES);
-    snmpv3_set_user_priv_key("lwip", "nuvoton_no1");
+    snmpv3_set_user_priv_key("lwip",  DEF_PRIV_KEY);
+
+    snmpv3_set_user_auth_algo("md5des", SNMP_V3_AUTH_ALGO_MD5);
+    snmpv3_set_user_auth_key("md5des",  DEF_AUTH_KEY);
+    snmpv3_set_user_priv_algo("md5des", SNMP_V3_PRIV_ALGO_DES);
+    snmpv3_set_user_priv_key("md5des",  DEF_PRIV_KEY);
+
+    snmpv3_set_user_auth_algo("md5aes", SNMP_V3_AUTH_ALGO_MD5);
+    snmpv3_set_user_auth_key("md5aes",  DEF_AUTH_KEY);
+    snmpv3_set_user_priv_algo("md5aes", SNMP_V3_PRIV_ALGO_AES);
+    snmpv3_set_user_priv_key("md5aes",  DEF_PRIV_KEY);
+
+    snmpv3_set_user_auth_algo("shades", SNMP_V3_AUTH_ALGO_SHA);
+    snmpv3_set_user_auth_key("shades",  DEF_AUTH_KEY);
+    snmpv3_set_user_priv_algo("shades", SNMP_V3_PRIV_ALGO_DES);
+    snmpv3_set_user_priv_key("shades",  DEF_PRIV_KEY);
+
+    snmpv3_set_user_auth_algo("shaaes", SNMP_V3_AUTH_ALGO_SHA);
+    snmpv3_set_user_auth_key("shaaes",  DEF_AUTH_KEY);
+    snmpv3_set_user_priv_algo("shaaes", SNMP_V3_PRIV_ALGO_AES);
+    snmpv3_set_user_priv_key("shaaes",  DEF_PRIV_KEY);
 
     /* Start the engine time timer */
     snmpv3_enginetime_timer(NULL);
