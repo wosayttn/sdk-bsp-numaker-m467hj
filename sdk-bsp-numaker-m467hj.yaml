@@ -72,7 +72,7 @@ features_zh:
 - Nu-Link-Me
 pkg_type: Board_Support_Packages
 pkg_vendor: Nuvoton
-pkg_version: 1.0.2
+pkg_version: 1.0.3
 template_projects:
 - builtin_files:
   - files_and_folders:
@@ -87,7 +87,7 @@ template_projects:
     - applications
     - makefile.targets
     - board
-    - README.md
+    - Debug
     - rtconfig.h
     - SConscript
     - libraries

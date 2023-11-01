@@ -203,13 +203,15 @@ menu "Hardware Drivers Config"
         select BSP_USING_CCAP0
         default n
 
-    config BOARD_USING_SENSON0_ID
-        int "Specify Sensor0 ID"
-        default 0  if BOARD_USING_SENSOR0
-        range 0 2
-        help
-            HM1055=0
-            ADV728X=1
+        if BOARD_USING_SENSOR0
+            config BOARD_USING_SENSON0_ID
+                int "Specify Sensor0 ID"
+                default 0
+                range 0 3
+                help
+                    HM1055=0
+                    ADV728X=1
+        endif
 
     endmenu
 

@@ -300,8 +300,6 @@ IRQn_Type;
 #define SRAM_BASE            ((uint32_t)0x20000000)      /*!< SRAM Base Address       */
 #define PERIPH_BASE          ((uint32_t)0x40000000)      /*!< Peripheral Base Address */
 
-#define TCM_BASE               (PERIPH_BASE + 0xBE000)
-
 /*!< AHB peripherals */
 //HCLK
 // CPU,CRC,EBI,EMC,FMC,PDMA,SD0,SD1,CRPT,SPIM,SRAM,HSUSBD, HSUSBH, USBH
@@ -436,7 +434,6 @@ IRQn_Type;
   @{
  */
 
-#define TCM                  ((TCM_T *)   TCM_BASE)
 #define SYS                  ((SYS_T *)   SYS_BASE)
 #define CLK                  ((CLK_T *)   CLK_BASE)
 #define NMI                  ((NMI_T *)   NMI_BASE)

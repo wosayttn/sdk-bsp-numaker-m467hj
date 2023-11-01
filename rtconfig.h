@@ -248,6 +248,7 @@
 #define RT_LWIP_TCPTHREAD_PRIORITY 10
 #define RT_LWIP_TCPTHREAD_MBOX_SIZE 64
 #define RT_LWIP_TCPTHREAD_STACKSIZE 2048
+#define LWIP_NO_TX_THREAD
 #define RT_LWIP_ETHTHREAD_PRIORITY 12
 #define RT_LWIP_ETHTHREAD_STACKSIZE 2048
 #define RT_LWIP_ETHTHREAD_MBOX_SIZE 64
@@ -262,6 +263,7 @@
 #define RT_LWIP_NETIF_LOOPBACK
 #define LWIP_NETIF_LOOPBACK 1
 #define RT_LWIP_STATS
+#define RT_LWIP_USING_HW_CHECKSUM
 #define RT_LWIP_USING_PING
 
 /* Utilities */
@@ -299,6 +301,9 @@
 /* Wiced WiFi */
 
 
+/* CYW43012 WiFi */
+
+
 /* IoT Cloud */
 
 
@@ -327,9 +332,6 @@
 #define PKG_WP_RECORD_DEVICE "sound0"
 #define PKG_USING_WAVPLAYER_LATEST_VERSION
 
-/* PainterEngine: A cross-platform graphics application framework written in C language */
-
-
 /* tools packages */
 
 
@@ -337,6 +339,18 @@
 
 /* enhanced kernel services */
 
+#define PKG_USING_RT_VSNPRINTF_FULL
+#define PKG_VSNPRINTF_SUPPORT_DECIMAL_SPECIFIERS
+#define PKG_VSNPRINTF_SUPPORT_EXPONENTIAL_SPECIFIERS
+#define PKG_VSNPRINTF_SUPPORT_WRITEBACK_SPECIFIER
+#define PKG_VSNPRINTF_SUPPORT_LONG_LONG
+#define PKG_VSNPRINTF_CHECK_FOR_NUL_IN_FORMAT_SPECIFIER
+#define PKG_VSNPRINTF_INTEGER_BUFFER_SIZE 32
+#define PKG_VSNPRINTF_DECIMAL_BUFFER_SIZE 32
+#define PKG_VSNPRINTF_DEFAULT_FLOAT_PRECISION 6
+#define PKG_VSNPRINTF_MAX_INTEGRAL_DIGITS_FOR_DECIMAL 9
+#define PKG_VSNPRINTF_LOG10_TAYLOR_TERMS 4
+#define PKG_USING_RT_VSNPRINTF_FULL_LATEST_VERSION
 
 /* acceleration: Assembly language or algorithmic acceleration packages */
 
@@ -351,11 +365,19 @@
 
 /* peripheral libraries and drivers */
 
+/* sensors drivers */
+
+
+/* touch drivers */
+
 
 /* Kendryte SDK */
 
 
 /* AI packages */
+
+
+/* Signal Processing and Control Algorithm Packages */
 
 
 /* miscellaneous packages */
@@ -369,6 +391,40 @@
 
 #define PKG_USING_OPTPARSE
 #define PKG_USING_OPTPARSE_LATEST_VERSION
+
+/* Arduino libraries */
+
+
+/* Projects and Demos */
+
+
+/* Sensors */
+
+
+/* Display */
+
+
+/* Timing */
+
+
+/* Data Processing */
+
+
+/* Data Storage */
+
+/* Communication */
+
+
+/* Device Control */
+
+
+/* Other */
+
+
+/* Signal IO */
+
+
+/* Uncategorized */
 
 /* Hardware Drivers Config */
 
